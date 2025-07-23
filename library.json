@@ -5,12 +5,12 @@
   "keywords": ["ev", "iso15118", "charging"],
   "repository": {
     "type": "git",
-    "url": "https://github.com/EVerest/libiso15118"
+    "url": "https://github.com/Joulepoint/libiso15118"
   },
   "authors": [
     {
-      "name": "EVerest",
-      "email": "info@everest.energy",
+      "name": "Chinmoy Bhuyan",
+      "email": "contact@joulepoint.com",
       "maintainer": true
     }
   ],
