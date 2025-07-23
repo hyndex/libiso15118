@@ -7,9 +7,12 @@
 #include <endian.h>
 #include <netdb.h>
 #include <unistd.h>
-
+#ifdef ESP_PLATFORM
+#include <port/esp32/posix_stub.hpp>
+#else
 #include <arpa/inet.h>
 #include <net/if.h>
+#endif
 
 #include <cbv2g/exi_v2gtp.h>
 
