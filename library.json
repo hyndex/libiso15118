@@ -20,7 +20,8 @@
   "build": {
     "srcFilter": [
       "+<*>",
-      "-<examples>"
+      "-<examples>",
+      "-<src/iso15118/io/poll_manager.cpp>"
     ]
   }
 }
