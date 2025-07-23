@@ -1,0 +1,26 @@
+{
+  "name": "libiso15118",
+  "version": "0.7.1",
+  "description": "ISO 15118 communication library",
+  "keywords": ["ev", "iso15118", "charging"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/EVerest/libiso15118"
+  },
+  "authors": [
+    {
+      "name": "EVerest",
+      "email": "info@everest.energy",
+      "maintainer": true
+    }
+  ],
+  "license": "Apache-2.0",
+  "frameworks": ["espidf"],
+  "platforms": ["espressif32"],
+  "build": {
+    "srcFilter": [
+      "+<*>",
+      "-<examples>"
+    ]
+  }
+}
