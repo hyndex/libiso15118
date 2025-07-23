@@ -1,7 +1,7 @@
 ISO 15118 library suite
 =======================
 
-This is a C++ library implementation of ISO 15118-20, ISO15118-2 and DIN70121. The implementation of ISO15118-20 is currently under heavy development. DIN70121 and ISO15118-2 will follow and are currently covered by the [EvseV2G module](https://github.com/EVerest/everest-core/tree/main/modules/EvseV2G) of everest-core.
+This fork is maintained by **Joulepoint** and aims to provide a microcontroller-ready variant of the ISO 15118 communication library. It builds on the original implementation from the EVerest project. The ISO 15118-20 support is currently under heavy development. DIN70121 and ISO15118-2 functionality is covered by the [EvseV2G module](https://github.com/EVerest/everest-core/tree/main/modules/EvseV2G) of everest-core.
 
 ISO 15118-20 Support
 --------------------
