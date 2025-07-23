@@ -78,16 +78,22 @@ target_link_libraries(iso15118
         Threads::Threads
 )
 
-target_link_libraries(iso15118
-    PRIVATE
-        OpenSSL::SSL
-        OpenSSL::Crypto
-)
-target_sources(iso15118
-    PRIVATE
-    io/connection_ssl.cpp
-    misc/helper_ssl.cpp
-)
+if(ESP_PLATFORM)
+    target_sources(iso15118 PRIVATE
+        ../../port/esp32/socket_helper.cpp
+        ../../port/esp32/tls_wrapper.cpp
+    )
+else()
+    target_link_libraries(iso15118
+        PRIVATE
+            OpenSSL::SSL
+            OpenSSL::Crypto
+    )
+    target_sources(iso15118 PRIVATE
+        io/connection_ssl.cpp
+        misc/helper_ssl.cpp
+    )
+endif()
 
 # FIXME (aw): do we want to have this public here?
 target_compile_features(iso15118 PUBLIC cxx_std_17)

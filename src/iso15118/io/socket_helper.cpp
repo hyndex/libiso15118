@@ -3,12 +3,15 @@
 #include <iso15118/detail/io/socket_helper.hpp>
 
 #include <cstring>
-
+#ifdef ESP_PLATFORM
+#include <port/esp32/posix_stub.hpp>
+#else
 #include <arpa/inet.h>
 #include <ifaddrs.h>
 #include <net/if.h>
 #include <netdb.h>
 #include <netinet/in.h>
+#endif
 
 #include <iso15118/detail/helper.hpp>
 

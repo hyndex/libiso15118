@@ -15,10 +15,16 @@
 
 #include <sys/socket.h>
 
+#ifndef ESP_PLATFORM
 #include <openssl/bio.h>
 #include <openssl/err.h>
 #include <openssl/evp.h>
 #include <openssl/ssl.h>
+#else
+#include <mbedtls/ssl.h>
+#include <mbedtls/ssl_ticket.h>
+#include <mbedtls/error.h>
+#endif
 
 #include <iso15118/detail/helper.hpp>
 #include <iso15118/detail/io/helper_ssl.hpp>
@@ -227,7 +233,7 @@ SSL_CTX* init_ssl(const config::SSLConfig& ssl_config) {
     const auto ctx = SSL_CTX_new(method);
 
     if (ctx == nullptr) {
-        log_and_raise_openssl_error("Failed in SSL_CTX_new()");
+        log_and_raise_tls_error("Failed in SSL_CTX_new()");
     }
 
     const int result_set_min_proto_version = (ssl_config.enforce_tls_1_3)
@@ -239,19 +245,19 @@ SSL_CTX* init_ssl(const config::SSLConfig& ssl_config) {
     }
 
     if (result_set_min_proto_version == 0) {
-        log_and_raise_openssl_error("Failed in SSL_CTX_set_min_proto_version()");
+        log_and_raise_tls_error("Failed in SSL_CTX_set_min_proto_version()");
     }
 
     if (not ssl_config.enforce_tls_1_3 and SSL_CTX_set_cipher_list(ctx, TLS1_2_CIPHERSUITES) == 0) {
-        log_and_raise_openssl_error("Failed in SSL_CTX_set_cipher_list()");
+        log_and_raise_tls_error("Failed in SSL_CTX_set_cipher_list()");
     }
 
     if (SSL_CTX_set_ciphersuites(ctx, TLS1_3_CIPHERSUITES) == 0) {
-        log_and_raise_openssl_error("Failed in SSL_CTX_set_ciphersuites()");
+        log_and_raise_tls_error("Failed in SSL_CTX_set_ciphersuites()");
     }
 
     if (SSL_CTX_use_certificate_chain_file(ctx, ssl_config.path_certificate_chain.c_str()) != 1) {
-        log_and_raise_openssl_error("Failed in SSL_CTX_use_certificate_chain_file()");
+        log_and_raise_tls_error("Failed in SSL_CTX_use_certificate_chain_file()");
     }
 
     // INFO: the password callback uses a non-const argument
@@ -263,7 +269,7 @@ SSL_CTX* init_ssl(const config::SSLConfig& ssl_config) {
     }
 
     if (SSL_CTX_use_PrivateKey_file(ctx, ssl_config.path_certificate_key.c_str(), SSL_FILETYPE_PEM) != 1) {
-        log_and_raise_openssl_error("Failed in SSL_CTX_use_PrivateKey_file()");
+        log_and_raise_tls_error("Failed in SSL_CTX_use_PrivateKey_file()");
     }
 
     // Loading root certificates to verify client (only for tls 1.3)
@@ -392,7 +398,7 @@ void ConnectionSSL::write(const uint8_t* buf, size_t len) {
 
     if (ssl_write_result <= 0) {
         const auto ssl_err_raw = SSL_get_error(ssl_ptr, ssl_write_result);
-        log_and_raise_openssl_error("Failed to SSL_write_ex(): " + std::to_string(ssl_err_raw));
+        log_and_raise_tls_error("Failed to SSL_write_ex(): " + std::to_string(ssl_err_raw));
     } else if (writebytes != len) {
         log_and_throw("Didn't complete to write");
     }
@@ -417,7 +423,7 @@ ReadResult ConnectionSSL::read(uint8_t* buf, size_t len) {
         return {true, 0};
     }
 
-    log_and_raise_openssl_error("Failed to SSL_read_ex(): " + std::to_string(ssl_error));
+    log_and_raise_tls_error("Failed to SSL_read_ex(): " + std::to_string(ssl_error));
 
     return {false, 0};
 }
@@ -428,7 +434,7 @@ void ConnectionSSL::handle_connect() {
     ssl->accept_fd = BIO_accept_ex(ssl->fd, peer, BIO_SOCK_NONBLOCK);
 
     if (ssl->accept_fd < 0) {
-        log_and_raise_openssl_error("Failed to BIO_accept_ex");
+        log_and_raise_tls_error("Failed to BIO_accept_ex");
     }
 
     const auto ip = BIO_ADDR_hostname_string(peer, 1);
@@ -477,7 +483,7 @@ void ConnectionSSL::handle_data() {
             if ((ssl_error == SSL_ERROR_WANT_READ) or (ssl_error == SSL_ERROR_WANT_WRITE)) {
                 return;
             }
-            log_and_raise_openssl_error("Failed to SSL_accept(): " + std::to_string(ssl_error));
+            log_and_raise_tls_error("Failed to SSL_accept(): " + std::to_string(ssl_error));
         } else {
             logf_info("Handshake complete!");
 
@@ -542,7 +548,7 @@ void ConnectionSSL::close() {
     if (ssl_close_result < 0) {
         const auto ssl_error = SSL_get_error(ssl_ptr, ssl_close_result);
         if ((ssl_error != SSL_ERROR_WANT_READ) and (ssl_error != SSL_ERROR_WANT_WRITE)) {
-            log_and_raise_openssl_error("Failed to SSL_shutdown(): " + std::to_string(ssl_error));
+            log_and_raise_tls_error("Failed to SSL_shutdown(): " + std::to_string(ssl_error));
         }
     }
 
