@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <vector>
 
+#ifndef ESP_PLATFORM
 #include <poll.h>
 #include <sys/eventfd.h>
 #include <unistd.h>
@@ -85,3 +86,5 @@ void PollManager::abort() {
 }
 
 } // namespace iso15118::io
+
+#endif // !ESP_PLATFORM

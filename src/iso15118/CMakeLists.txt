@@ -14,7 +14,6 @@ target_sources(iso15118
 
         io/connection_plain.cpp
         io/logging.cpp
-        io/poll_manager.cpp
         io/sdp_packet.cpp
         io/sdp_server.cpp
         io/socket_helper.cpp
@@ -80,6 +79,7 @@ target_link_libraries(iso15118
 
 if(ESP_PLATFORM)
     target_sources(iso15118 PRIVATE
+        ../../port/esp32/poll_manager.cpp
         ../../port/esp32/socket_helper.cpp
         ../../port/esp32/tls_wrapper.cpp
     )
@@ -90,6 +90,7 @@ else()
             OpenSSL::Crypto
     )
     target_sources(iso15118 PRIVATE
+        io/poll_manager.cpp
         io/connection_ssl.cpp
         misc/helper_ssl.cpp
     )

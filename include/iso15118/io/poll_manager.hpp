@@ -6,14 +6,23 @@
 #include <map>
 #include <vector>
 
+#ifndef ESP_PLATFORM
 #include <poll.h>
+#else
+#include <freertos/FreeRTOS.h>
+#include <freertos/event_groups.h>
+#include <sys/select.h>
+#endif
 namespace iso15118::io {
 
 using PollCallback = const std::function<void()>;
+
+#ifndef ESP_PLATFORM
 struct PollSet {
     std::vector<struct pollfd> fds;
     std::vector<PollCallback*> callbacks;
 };
+#endif
 
 class PollManager {
 public:
@@ -28,9 +37,14 @@ public:
 private:
     std::map<int, PollCallback> registered_fds;
 
+    
+#ifndef ESP_PLATFORM
     PollSet poll_set;
-
     int event_fd{-1};
+#else
+    EventGroupHandle_t event_group{nullptr};
+    static constexpr EventBits_t ABORT_BIT = BIT0;
+#endif
 };
 
 } // namespace iso15118::io
