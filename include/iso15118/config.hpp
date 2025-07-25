@@ -2,9 +2,11 @@
 // Copyright 2023 Pionix GmbH and Contributors to EVerest
 #pragma once
 
-#include <filesystem>
 #include <optional>
 #include <string>
+#ifndef ESP_PLATFORM
+#include <filesystem>
+#endif
 
 namespace iso15118::config {
 
@@ -32,7 +34,7 @@ struct SSLConfig {
     bool enable_ssl_logging{false};
     bool enable_tls_key_logging{false};
     bool enforce_tls_1_3{false};
-    std::filesystem::path tls_key_logging_path{};
+    std::string tls_key_logging_path{};
 };
 
 } // namespace iso15118::config
