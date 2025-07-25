@@ -134,9 +134,11 @@ Replace the `program` path to any test executable you are debugging.
 PlatformIO Usage
 ---------------
 
-For ESP32 boards using the ESP-IDF framework, you can build the provided example with PlatformIO:
+For ESP32 boards using the ESP-IDF framework, you can build the provided example
+with PlatformIO.  Since the ESP-IDF toolchain manages dependencies itself,
+disable the EDM integration when invoking CMake:
 ```bash
-pio run -e esp32s3
+pio run -e esp32s3 -- -DDISABLE_EDM=ON
 ```
 This will compile the library and the example located in `examples/esp32_demo`.
 

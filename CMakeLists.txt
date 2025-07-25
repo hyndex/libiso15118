@@ -38,6 +38,15 @@ Licence Agreement (“Licence Agreement”), clauses 1. ISO’s Copyright, \
 
 option(ISO15118_INSTALL "Enable install target" ${EVC_MAIN_PROJECT})
 
+# Disable EDM when building for ESP32 to avoid fetching dependencies from the
+# EVerest dependency manager.  This allows PlatformIO builds that manage
+# dependencies themselves.  By default EDM is enabled except on ESP_PLATFORM.
+set(DISABLE_EDM_DEFAULT OFF)
+if(ESP_PLATFORM)
+    set(DISABLE_EDM_DEFAULT ON)
+endif()
+option(DISABLE_EDM "Disable usage of EVerest dependency manager" ${DISABLE_EDM_DEFAULT})
+
 # list of compile options
 set(ISO15118_COMPILE_OPTIONS_WARNING "-Wall;-Wextra;-Wno-unused-function;-Werror" CACHE STRING "A list of compile options used")
 message(STATUS "Building libiso15118 with the following compile options: ${ISO15118_COMPILE_OPTIONS_WARNING}")
@@ -52,7 +61,32 @@ if (NOT DISABLE_EDM)
     # In EDM mode, we can't install exports (because the dependencies usually do not install their exports)
     set(ISO15118_INSTALL OFF)
 else()
-    find_package(cbv2g REQUIRED)
+    # When EDM is disabled we fetch required dependencies manually
+    find_package(cbv2g QUIET)
+    if(NOT cbv2g_FOUND)
+        message(STATUS "Fetching cbv2g dependency")
+        include(FetchContent)
+        FetchContent_Declare(
+            cbv2g
+            GIT_REPOSITORY https://github.com/EVerest/libcbv2g.git
+            GIT_TAG        v0.3.1
+        )
+        FetchContent_MakeAvailable(cbv2g)
+    endif()
+
+    if(ISO15118_BUILD_TESTING)
+        find_package(Catch2 3 QUIET)
+        if(NOT Catch2_FOUND)
+            message(STATUS "Fetching Catch2 for tests")
+            include(FetchContent)
+            FetchContent_Declare(
+                Catch2
+                GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+                GIT_TAG        v3.7.1
+            )
+            FetchContent_MakeAvailable(Catch2)
+        endif()
+    endif()
 endif()
 
 add_subdirectory(input)
