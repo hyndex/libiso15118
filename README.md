@@ -51,6 +51,8 @@ Dependencies
 
 To build this library you need [everest-cmake](https://github.com/EVerest/everest-cmake) checkout in the same directory as libiso15118. If no `everest-cmake` is available, it is retrieved via FetchContent.
 
+See [THIRD_PARTY.md](THIRD_PARTY.md) for a list of external libraries and their licenses.
+
 For Debian GNU/Linux 12 you will need the following dependencies:
 
 ```bash
