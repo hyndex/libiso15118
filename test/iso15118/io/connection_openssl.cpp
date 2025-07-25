@@ -1,4 +1,6 @@
+#ifndef ESP_PLATFORM
 #include <filesystem>
+#endif
 #include <iostream>
 #include <string>
 #include <unistd.h>
@@ -16,7 +18,7 @@ static constexpr auto POLL_MANAGER_TIMEOUT_MS = 50;
 static constexpr auto STOP_TIME = 30;
 
 const char* short_opts = "hi:";
-std::string interface {};
+std::string interface{};
 
 void parse_options(int argc, char** argv) {
     int c{0};

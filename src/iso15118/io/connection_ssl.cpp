@@ -7,7 +7,9 @@
 #include <cassert>
 #include <cinttypes>
 #include <cstring>
+#ifndef ESP_PLATFORM
 #include <filesystem>
+#endif
 #include <fstream>
 #include <sstream>
 #include <unistd.h>
@@ -21,9 +23,9 @@
 #include <openssl/evp.h>
 #include <openssl/ssl.h>
 #else
+#include <mbedtls/error.h>
 #include <mbedtls/ssl.h>
 #include <mbedtls/ssl_ticket.h>
-#include <mbedtls/error.h>
 #endif
 
 #include <iso15118/detail/helper.hpp>
@@ -319,7 +321,7 @@ ConnectionSSL::ConnectionSSL(PollManager& poll_manager_, const std::string& inte
     ssl->ssl_ctx = std::unique_ptr<SSL_CTX>(ssl_ctx);
 
     if (ssl_keylog_file_index != -1) {
-        ssl->tls_key_log_file_path = ssl_config.tls_key_logging_path / "tls_session_keys.log";
+        ssl->tls_key_log_file_path = std::filesystem::path(ssl_config.tls_key_logging_path) / "tls_session_keys.log";
         SSL_CTX_set_ex_data(ssl->ssl_ctx.get(), ssl_keylog_file_index, &ssl->tls_key_log_file_path);
     }
     sockaddr_in6 address;
