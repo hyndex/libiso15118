@@ -12,7 +12,7 @@ target_sources(iso15118
         misc/helper.cpp
         misc/cb_exi.cpp
 
-        io/connection_plain.cpp
+        $<$<NOT:$<BOOL:${ESP_PLATFORM}>>:io/connection_plain.cpp>
         io/logging.cpp
         io/sdp_packet.cpp
         io/sdp_server.cpp
@@ -83,6 +83,7 @@ if(ESP_PLATFORM)
         ../../port/esp32/socket_helper.cpp
         ../../port/esp32/tls_wrapper.cpp
         ../../port/esp32/connection_mbedtls.cpp
+        ../../port/esp32/connection_plain.cpp
     )
 else()
     target_link_libraries(iso15118
