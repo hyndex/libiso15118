@@ -140,6 +140,11 @@ pio run -e esp32s3
 ```
 This will compile the library and the example located in `examples/esp32_demo`.
 
+When libiso15118 is built inside PlatformIO the CMake variable `PLATFORMIO` (or
+`PioPlatform`) is defined.  If EDM is not available, the build system will skip
+`evc_setup_edm()` and fetch `libcbv2g` automatically.  In rare cases you might
+need to add `-DPLATFORMIO=ON` to the CMake invocation to enable this logic.
+
 
 Acknowledgment
 --------------

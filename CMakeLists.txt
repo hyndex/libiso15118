@@ -47,12 +47,29 @@ if((${CMAKE_PROJECT_NAME} STREQUAL ${PROJECT_NAME} OR ${PROJECT_NAME}_BUILD_TEST
 endif()
 
 # dependencies
+if(PLATFORMIO OR PioPlatform)
+    message(STATUS "PlatformIO detected - disabling EDM")
+    set(DISABLE_EDM ON)
+endif()
+
 if (NOT DISABLE_EDM)
     evc_setup_edm()
     # In EDM mode, we can't install exports (because the dependencies usually do not install their exports)
     set(ISO15118_INSTALL OFF)
 else()
-    find_package(cbv2g REQUIRED)
+    find_package(cbv2g QUIET)
+    if(NOT cbv2g_FOUND)
+        message(STATUS "Fetching libcbv2g because EDM is disabled")
+        include(FetchContent)
+        FetchContent_Declare(
+            libcbv2g
+            GIT_REPOSITORY https://github.com/EVerest/libcbv2g.git
+            GIT_TAG v0.3.1
+        )
+        FetchContent_MakeAvailable(libcbv2g)
+        # Externally fetched dependencies do not provide install rules
+        set(ISO15118_INSTALL OFF)
+    endif()
 endif()
 
 add_subdirectory(input)
