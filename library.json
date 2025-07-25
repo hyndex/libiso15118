@@ -21,7 +21,8 @@
     "srcFilter": [
       "+<*>",
       "-<examples>",
-      "-<src/iso15118/io/poll_manager.cpp>"
+      "-<src/iso15118/io/poll_manager.cpp>",
+      "-<src/iso15118/io/connection_ssl.cpp>"
     ]
   }
 }

@@ -82,6 +82,7 @@ if(ESP_PLATFORM)
         ../../port/esp32/poll_manager.cpp
         ../../port/esp32/socket_helper.cpp
         ../../port/esp32/tls_wrapper.cpp
+        ../../port/esp32/connection_mbedtls.cpp
     )
 else()
     target_link_libraries(iso15118
